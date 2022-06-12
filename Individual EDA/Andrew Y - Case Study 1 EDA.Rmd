@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r include=TRUE, echo=TRUE, results='hide', error=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
+library(maps)
 library(gridExtra)
 library(lubridate)
 library(GGally)
@@ -32,13 +33,21 @@ breweries = read_csv("/Users/andrewyule/Dropbox/Personal/SMU MSDS/03 - Doing Dat
 
 ## Analysis questions
 ### 1. How many breweries are present in each state?
-In the data, Colorado was found to have the most number of breweries from the data set (47), followed by California (39), Michigan (32), and Oregon (29). The lowest counted number of breweries was 1, which was found in Washington DC and North Dakota.
+In the data, Colorado was found to have the most number of breweries from the data set (47), followed by California (39), Michigan (32), Oregon (29), and Texas (28). The lowest counted number of breweries was 1, which was found in Washington DC, North Dakota, South Dakota and West Virigina.
 ```{r include=TRUE, echo=TRUE, error=FALSE, message=FALSE, warning=FALSE}
-breweries |>
-  count(State) |>
-  ggplot(aes(y = reorder(State, n), x = n)) +
-  geom_col() +
-  labs(x = "Total Number of Breweries", y = "State", title = "Total Number of Breweries by State")
+breweryCount = breweries |> count(State)
+stateAbbreviations = tibble(abb = state.abb, name = tolower(state.name))
+breweryCount = left_join(breweryCount, stateAbbreviations, by = c("State" = "abb"))
+
+states = as_tibble(map_data("state"))
+breweryCount = left_join(states, breweryCount, by = c("region" = "name"))
+ggplot(breweryCount, aes(x = long, y = lat, group = group))+
+  geom_polygon(aes(fill = n))+
+  geom_path() + 
+  scale_fill_gradientn(colours = rev(heat.colors(10)), na.value = "grey90") +
+  coord_map() +
+  labs(x = NULL, y = NULL, title = "Number of Breweries Found Across Each State") +
+  theme_void()
 ```
 
 ### 2. Merge the beers and breweries data sets to create a single data set containing both beer information as well as brewery
@@ -53,9 +62,9 @@ beers |> tail(n = 6)
 
 
 ### 3. Address the missing values in each column.
-The only columns from the data set containing missing entries are ABV (alcohol by volume), IBU (international bitterness units), and Style. The highest number of missing values was found for the IBU variable.
+The only columns from the data set containing missing entries are ABV (alcohol by volume), IBU (international bitterness units), and Style. The highest number of missing values was found for the IBU variable (42% of values are missing).
 ```{r include=TRUE, echo=TRUE, error=FALSE, message=FALSE, warning=FALSE}
-colSums(is.na(beers))
+(colSums(is.na(beers))/dim(beers)[1])*100
 ```
 
 ### 4. / 5. Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare. Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
