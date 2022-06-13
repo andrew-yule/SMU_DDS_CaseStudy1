@@ -87,17 +87,24 @@ medianIBU = beers |>
   summarize(IBU = median(IBU))
 
 p1 = medianABV |>
-  ggplot(aes(y = reorder(State, ABV), x = ABV)) +
-  geom_col() +
-  labs(x = "Median ABV", y = NULL, title = "Median Alcohol by Volume Across States")
+  ggplot(aes(x = reorder(State, ABV), y = ABV)) +
+  geom_col(fill = "red") +
+  labs(y = "Median ABV", x = NULL, title = "Median Alcohol by Volume (ABV) Across States")
 
 p2 = medianIBU |>
-  ggplot(aes(y = reorder(State, IBU), x = IBU)) +
-  geom_col() +
-  labs(x = "Median IBU", y = NULL, title = "Median International Bitterness Unit Across States")
+  ggplot(aes(x = reorder(State, IBU), y = IBU)) +
+  geom_col(fill = "blue") +
+  labs(y = "Median IBU", x = NULL, title = "Median International Bitterness Unit (IBU) Across States")
 
 grid.arrange(p1, p2)
 ```
+
+The absolute maximum ABV and IBU for any state
+```{r}
+slice_max(beers, ABV, n = 1)
+slice_max(beers, IBU, n = 1)
+```
+
 
 ### 6. Comment on the summary statistics and distribution of the ABV variable.
 Overall, the average ABV is around 0.059, with a minimum and maximum reported value of 0.001 and 0.128 respectively. The distribution of ABV is right skewed, meaning there are a few beers with very high alcohol contents increasing the mean ABV compared to the median ABV.
@@ -108,7 +115,8 @@ beers |>
 
 beers |> 
   ggplot(aes(x = ABV)) +
-  geom_histogram()
+  geom_histogram() +
+  labs(x = "ABV", y = "Frequency", title = "Distribution of ABV Values Across Beers")
 ```
 
 ### 7. Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.  Make your best judgment of a relationship and EXPLAIN your answer.
@@ -122,11 +130,4 @@ beers |>
   geom_smooth(method = "lm") +
   labs(x = "IBU", y = "ABV", title = "Relationship between IBU and ABV")
 ```
-
-
-
-
-
-
-
 
