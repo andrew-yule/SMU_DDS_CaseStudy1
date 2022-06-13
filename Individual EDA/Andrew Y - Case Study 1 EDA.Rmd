@@ -50,6 +50,11 @@ ggplot(breweryCount, aes(x = long, y = lat, group = group))+
   theme_void()
 ```
 
+What percentage of breweries do the top 5 states make up?
+```{r}
+sum(arrange(count(breweries, State), desc(n))[1:5, 2]) / sum(count(breweries, State)[, 2])
+```
+
 ### 2. Merge the beers and breweries data sets to create a single data set containing both beer information as well as brewery
 ```{r include=TRUE, echo=TRUE, error=FALSE, message=FALSE, warning=FALSE}
 beers = left_join(beers, breweries, by = c("Brewery_id" = "Brew_ID")) |>
