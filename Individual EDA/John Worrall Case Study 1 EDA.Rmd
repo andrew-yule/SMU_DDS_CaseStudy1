@@ -1,0 +1,117 @@
+---
+title: "John_Worrall_Project_1"
+output: html_document
+date: '2022-06-15'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Project 1, echo=FALSE}
+library(RCurl) 
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(RCurl)
+library(ggplot2)
+library(rjson)
+library(caret)
+library(class)
+library(rjson)
+library(plotly)
+library(e1071)
+library(psych)
+
+
+#dataset decription#
+
+#importing data from downloaded CSV files named Breweries and Beers
+df1 <- read.csv(file="Breweries.csv")
+head(df1)
+tail(df1)
+
+df2 <- read.csv(file="Beers.csv")
+head(df2)
+tail(df2)
+colnames(df2) <- c("Beer", "Beer_ID", 'ABV', 'IBU', "Brew_ID", "Style", "Ounces" )
+head(df2)
+tail(df2)
+
+#merging on Brew_ID
+df <- merge(df1, df2, by="Brew_ID")
+head(df)
+tail(df)
+
+
+#breweries per State
+df3<- df %>% group_by(State) %>% summarise((count=n()))
+ggplot(df1, aes(State)) +geom_bar()
+tail(df3)
+sum(df3$count)/51
+
+#missing values
+summary(df)
+
+#removing NA values
+df<-na.omit(df)
+tail(df)
+
+
+#finding median ABV by State
+df4 <- aggregate(df$ABV, list(df$State), median)
+colnames(df4) <- c("State", "Median_ABV")
+tail(df4)
+ggplot(df4, aes(x = State, y =Median_ABV, fill=Median_ABV)) +geom_bar(stat = "identity") + theme_classic()
+mean(df4$Median_ABV)
+min(df4$Median_ABV)
+max(df4$Median_ABV)
+
+
+
+#finding median ABV by State
+df5 <- aggregate(df$IBU, list(df$State), median)
+colnames(df5) <- c("State", "Median_IBU")
+tail(df5)
+ggplot(df5, aes(x = State, y =Median_IBU, fill=Median_IBU)) +geom_bar(stat = "identity") + theme_classic()
+mean(df5$Median_IBU)
+min(df5$Median_IBU)
+max(df5$Median_IBU)
+tail(df5)
+
+#merging ABV and IBU for comparison bar chart
+df6 <- merge(df4, df5, by="State")
+head(df6)
+tail(df6)
+summary(df6)
+
+#Plotting Median ABV and IBU
+#sf =scaling factor
+sf <- max(df6$Median_ABV)/max(df6$Median_IBU)
+df7 <- df6 %>%
+  mutate(Median_IBU = Median_IBU*sf) %>%
+  pivot_longer(names_to = "y_new", values_to = "val", Median_ABV:Median_IBU)
+ggplot(df7, aes(x=State)) + geom_bar( aes(y = val, fill = y_new, group = y_new), stat="identity", position=position_dodge(), color="black", alpha=.6) + scale_y_continuous(name = "Median ABV",labels = scales::comma,sec.axis = sec_axis(~./sf, name="Median IBU", labels = scales::comma))
+
+
+#finding max IBU by State
+df8 <- aggregate(df$IBU, list(df$State), mean)
+colnames(df8) <- c("State", "Mean_IBU")
+tail(df8)
+ggplot(df8, aes(x = State, y =Mean_IBU, fill=Mean_IBU)) +geom_bar(stat = "identity") + theme_classic()
+      
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+
+#finding max ABV by State
+df9 <- aggregate(df$ABV, list(df$State), mean)
+colnames(df9) <- c("State", "Mean_ABV")
+tail(df9)
+ggplot(df9, aes(x = State, y =Mean_ABV, fill=Mean_ABV)) +geom_bar(stat = "identity") + theme_classic()
+
+
+                                                                                                                                                                                                                                      
+                                                                                                                                                                                                                                          
+
+
+```
+
