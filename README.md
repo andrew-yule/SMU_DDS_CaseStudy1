@@ -10,8 +10,10 @@ The following files can be found in this repository:
   - Final presentation that was delivered to Budweiser executive team
 - Budweiser - Beer and Brewery Analysis - Andrew Yule.Rmd
   - Final R markdown file containing the full code used for the final analysis
-- Budweiser---Beer-and-Brewery-Analysis---Andrew-Yule.html
+- Budweiser - Beer and Brewery Analysis - Andrew Yule.html
   - HTML containing the knitted output from the final R markdown file
+- Case Study 1 Assignment Submission.docx
+  - File containing information about the final URL links to this repository as well as final YouTube presentation upload
 - README
   - This file
 
